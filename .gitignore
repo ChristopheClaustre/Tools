@@ -32,4 +32,6 @@
 *.app
 
 # QtCreator
-build*
+build-*-Debug
+build-*-Release
+build-*-Profile
