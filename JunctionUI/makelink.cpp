@@ -12,29 +12,16 @@ MakeLink::MakeLink(QObject* parent) :
     m_errors(""),
     m_results("")
 {
-    QFile fhelp("help");
-
-    system("cmd /U /C mklink /? > help");
-
-    if (fhelp.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QTextStream out(&fhelp);
-
-        m_help = out.readAll().trimmed();
-
-        fhelp.remove();
-
-        emit(helpChanged());
-    }
 }
 
 MakeLink::~MakeLink()
 {
 }
 
-void MakeLink::callMakeLink(QString pOptions, QString pLink, QString pTarget)
+void MakeLink::callMakeLink(QString pLink, QString pTarget)
 {
-    QString lCommand("cmd /U /C mklink %0 \"%1\" \"%2\" > out 2> err");
-    lCommand = lCommand.arg(pOptions).arg(pLink).arg(pTarget);
+    QString lCommand("cmd /U /C mklink /J \"%0\" \"%1\" > out 2> err");
+    lCommand = lCommand.arg(pLink).arg(pTarget);
 
     QFile fout("out");
     QFile ferr("err");
@@ -69,7 +56,6 @@ void MakeLink::setResults(QString p_results) {
 
 std::ostream& operator<<(std::ostream& out, const MakeLink& p_makeLink)
 {
-    out << "--> help : " << std::endl << p_makeLink.getHelp().toStdString() << std::endl;
     out << "--> results : " << std::endl << p_makeLink.getResults().toStdString() << std::endl;
     out << "--> errors : " << std::endl << p_makeLink.getErrors().toStdString() << std::endl;
 

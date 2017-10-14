@@ -1,5 +1,5 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
@@ -7,11 +7,13 @@ import MakeLink 1.0
 
 ApplicationWindow {
     visible: true
-    width: 500
-    height: 570
-    minimumWidth: 500
-    minimumHeight: 570
-    title: qsTr("Make Link")
+    width: 570
+    height: 360
+    minimumWidth: 550
+    minimumHeight: 360
+    maximumWidth: minimumWidth
+    maximumHeight: minimumHeight
+    title: qsTr("Make Junction")
 
     flags: Qt.Window | Qt.WindowTitleHint
 
@@ -19,7 +21,6 @@ ApplicationWindow {
     property bool linkFolderValid: false
     property bool targetValid: false
     property bool valid: linkValid && linkFolderValid && targetValid
-    property bool needDirectory: jOption.checked && dOption.checked
 
     Item {
         anchors.fill: parent
@@ -29,148 +30,124 @@ ApplicationWindow {
 
         ColumnLayout {
             anchors.fill: parent
-            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-
-            RowLayout {
-                Layout.fillWidth: true
-                Button {
-                    id: linkButton
-                    Layout.fillWidth: true
-                    text: "link's parent folder"
-
-                    contentItem: Text {
-                        text: parent.text
-                        font: parent.font
-                        color: Material.foreground
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        elide: Text.ElideMiddle
-                    }
-
-                    onClicked: linkFolderDialog.open()
-                }
-                TextField {
-                    id: linkField
-                    Layout.minimumWidth: 0.25 * parent.width
-                    placeholderText: "link name ..."
-                    validator: RegExpValidator { id:validator; regExp: /[A-Za-z0-9_ -]*/ }
-
-                    property string initialColor: "red"
-
-                    onTextChanged: {
-                        color = acceptableInput? initialColor : "red"
-                    }
-
-                    onAccepted: if (valid) validate()
-
-                    Component.onCompleted: initialColor = color
-                }
-            }
-
-            Button {
-                id: targetButton
-                Layout.fillWidth: true
-                text: "target"
-
-                contentItem: Text {
-                    text: parent.text
-                    font: parent.font
-                    color: Material.foreground
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    elide: Text.ElideMiddle
-                }
-
-                onClicked: targetDialog.open()
-            }
 
             GroupBox {
-                title: "options"
-                font.pixelSize: 18
-                font.bold: true
-                font.capitalization: Font.AllUppercase
-
+                //Layout.fillHeight: true
                 Layout.fillWidth: true
-                RowLayout {
+                Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+
+                ColumnLayout {
                     anchors.fill: parent
+                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
 
-                    RadioButton {
-                        font.pixelSize: 16
-                        font.bold: false
-                        text: "aucune"
-
-                        Layout.fillHeight: true
+                    RowLayout {
                         Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+                        Button {
+                            id: linkButton
+                            Layout.fillWidth: true
+                            text: "Link's folder"
+                            font.capitalization: Font.AllUppercase
+
+                            ToolTip {
+                                visible: linkButton.hovered
+                                delay: 500
+                                contentItem: Label {
+                                    text: linkButton.text
+                                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                                }
+                            }
+
+                            contentItem: Label {
+                                text: linkButton.text
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                elide: Text.ElideMiddle
+                            }
+
+                            onClicked: linkFolderDialog.open()
+                        }
+                        TextField {
+                            id: linkField
+                            Layout.minimumWidth: 0.25 * parent.width
+                            placeholderText: "Link ..."
+                            validator: RegExpValidator { id:validator; regExp: /[A-Za-z0-9_-#éàèù|\[\] ]*/ }
+
+                            property string initialColor: "red"
+
+                            onTextChanged: {
+                                color = acceptableInput? initialColor : "red"
+                            }
+
+                            onAccepted: if (valid) validate()
+
+                            Component.onCompleted: initialColor = color
+                        }
                     }
-                    RadioButton {
-                        id: dOption
-                        font.pixelSize: 16
-                        font.bold: false
-                        text: "/D"
 
-                        Layout.fillHeight: true
+                    Button {
+                        id: targetButton
                         Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    }
-                    RadioButton {
-                        id: jOption
-                        font.pixelSize: 16
-                        font.bold: false
-                        text: "/J"
-                        checked: true
+                        text: "Target"
+                        font.capitalization: Font.AllUppercase
 
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    }
-                    RadioButton {
-                        id: hOption
-                        font.pixelSize: 16
-                        font.bold: false
-                        text: "/H"
+                        ToolTip {
+                            visible: targetButton.hovered
+                            delay: 500
+                            contentItem: Label {
+                                text: targetButton.text
+                                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                            }
+                        }
 
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+                        contentItem: Label {
+                            text: targetButton.text
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            elide: Text.ElideMiddle
+                        }
+
+                        onClicked: targetDialog.open()
                     }
                 }
             }
 
             GroupBox {
-                title: "Help"
-                font.pixelSize: 18
-                font.bold: true
-                font.capitalization: Font.AllUppercase
-
+                title: "Informations"
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                TextArea {
-                    font.pixelSize: 15
+
+                font.pixelSize: 18
+                font.bold: true
+                font.capitalization: Font.AllUppercase
+
+                Label {
+                    text: (makeLink.hasErrors)? makeLink.errors : makeLink.results
+                    anchors.fill: parent
+
+                    font.pixelSize: 16
                     font.bold: false
                     font.capitalization: Font.MixedCase
-
-                    text: makeLink.help
-                    readOnly: true
                     wrapMode: TextEdit.Wrap
-                    activeFocusOnPress: false
-                    activeFocusOnTab: false
+
+                    color: (makeLink.hasErrors)? Qt.lighter("red", 1.2) : Material.foreground
                 }
             }
 
             RowLayout {
+                Layout.alignment: Qt.AlignHCenter
+
                 Button {
                     id: cancelButton
-                    Layout.fillWidth: true
                     text: "Cancel"
+                    Layout.minimumWidth: 150
 
                     onClicked: Qt.quit()
                 }
 
                 Button {
                     id: goButton
-                    Layout.fillWidth: true
-                    text: "Go !!"
+                    text: "Link !!"
+                    Layout.minimumWidth: 150
                     enabled: valid
 
                     onClicked: validate()
@@ -187,17 +164,12 @@ ApplicationWindow {
     }
 
     function validate() {
-        var option = "" + (dOption.checked? dOption.text:"") + (jOption.checked? jOption.text:"") + (hOption.checked? hOption.text:"")
-        makeLink.callMakeLink(option, linkButton.text+linkField.text, targetButton.text)
-        messagePopup.open()
+        makeLink.callMakeLink(linkButton.text+linkField.text, targetButton.text)
     }
 
-    MakeLink { id: makeLink }
-
-    PressetPopup {
-        id: messagePopup
-        results: makeLink.results
-        errors: makeLink.errors
+    MakeLink {
+        id: makeLink
+        property bool hasErrors: makeLink.errors !== ""
     }
 
     FileDialog {
@@ -206,18 +178,18 @@ ApplicationWindow {
         folder: shortcuts.documents
 
         onAccepted: {
-            linkButton.text = (""+linkFolderDialog.folder).replace("file:///", "")+"/"
+            linkButton.text = (""+linkFolderDialog.fileUrl).replace("file:///", "")+"/"
             linkFolderValid = true
         }
     }
 
     FileDialog {
         id: targetDialog
-        selectFolder: needDirectory
+        selectFolder: true
         folder: shortcuts.documents
 
         onAccepted: {
-            targetButton.text = (""+targetDialog.folder).replace("file:///", "")
+            targetButton.text = (""+targetDialog.fileUrl).replace("file:///", "")
             targetValid = true
             if (linkField.text === "") {
                 var dirs = targetButton.text.split("/")
